@@ -1,0 +1,33 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    height: 100vh;
+    /* background-color:aqua; */
+}
+
+.top{
+    height: 10%;
+    width: 100%;
+    background-color: gray;
+}
+.middle{
+    height: 80%;
+    width: 100%;
+    /* background-color: green; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bottom{
+    height: 10%;
+    width: 100%;
+    background-color: blue;
+}
+
+canvas{
+    background-color: bisque;
+}
