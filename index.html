@@ -12,6 +12,16 @@
     <div class="container">
         
         <div class="top">
+            <span id="alert">
+                
+            </span>
+            <span id="messege">
+                
+            </span>
+
+            <span id="killed">
+                
+            </span>
 
         </div>
 
@@ -24,13 +34,38 @@
         <div class="bottom">
             <button 
             id="dice"
-            onclick="rollDice()" >Roll</button>
+            >Roll</button>
         </div>
+
+
+        <div class="overLap">
+
+            <div>
+                <span>Choose Number of Players</span>
+            </div>
+
+            <div id="selectPlayer">
+                <span class="selected">2</span>
+                <span>3</span>
+                <span>4</span>
+            </div>
+
+            <div>
+                <button
+                id="start"
+                onclick="start()"
+                >Start</button>
+            </div>
+
+        </div>
+
 
     </div>
 
+    <script src="frontEnd.js" ></script>
     <script src="board.js" ></script>
     <script src="index.js" ></script>
+    
 
 </body>
 </html>

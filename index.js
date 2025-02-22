@@ -4,7 +4,7 @@ ctx = canvas.getContext('2d')
 
 class Game{
 
-    constructor(canvas,ctx){
+    constructor(canvas,ctx,numberOfPlayers){
         this.canvas=canvas
         this.ctx=ctx
         this.dice = undefined
@@ -15,7 +15,7 @@ class Game{
         this.canvas.height = this.canvasDims
         this.canvas.width = this.canvasDims
 
-        this.numberOfPlayers = 4
+        this.numberOfPlayers = Number(numberOfPlayers)
         this.numberOfWinners = 0
 
         this.turn = 1
@@ -43,9 +43,11 @@ class Game{
             },
         }
 
+        document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+
     }
 
-
+    
     
 
     start(){
@@ -74,7 +76,10 @@ class Game{
         };
 
 
-        
+        document.querySelector('#dice').addEventListener('click',()=>{
+            this.rollDice()
+            document.querySelector('#killed').innerText = ``
+        })
 
 
         window.addEventListener('resize',()=>{
@@ -131,9 +136,9 @@ class Game{
 
         const randomNum = Math.floor(Math.random()*6)+1
 
-        this.dice = randomNum
+        this.dice = 21
 
-        console.log('Player',this.turn,'rolled',this.dice)
+        document.querySelector('#messege').innerText = `Player-${this.turn} got ${this.dice}`
 
 
 
@@ -148,6 +153,8 @@ class Game{
 
             console.log('you need',isEligibleToMove.need,'to move')
 
+            document.querySelector('#messege').innerText = `Player ${this.turn} need ${isEligibleToMove.need} to move`
+
             this.turn++
 
             this.turn>this.numberOfPlayers?this.turn=1:null
@@ -155,8 +162,11 @@ class Game{
             if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
 
             this.turn>this.numberOfPlayers?this.turn=1:null
-            
 
+            document.querySelector('#dice').disabled = false
+
+            document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+            
 
         }else{
             console.log('Player',this.turn,'position changed')
@@ -321,6 +331,7 @@ class Game{
 
             this.checkToKillOrShare(turn)
 
+
             this.updateGame();
 
             if(win){
@@ -332,9 +343,16 @@ class Game{
                 this.numberOfWinners++
 
                 if(this.numberOfWinners===this.numberOfPlayers-1)this.gameOver()
+                
+                
+            }else{
+                document.querySelector('#dice').disabled = false
+
+                document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+                document.querySelector('#messege').innerText = ``
             }
 
-            document.querySelector('#dice').disabled = false
+            
 
             return ;  // Stop when all steps are taken  
         }
@@ -458,13 +476,13 @@ class Game{
                     ){
                         
                         share(i,turn)
-                
+                        
                         break;  
                     }else{
-                        console.log(this.playerList)
+                    
                         const updateKillPosition = kill(i,turn,this.playerList)
                         this.playerList = updateKillPosition
-                        console.log(this.playerList)
+                        
                     }
 
             }
@@ -477,6 +495,8 @@ class Game{
         function kill(killed,killedBy,playerList){
 
             console.log('Player',killedBy,'killed Player',killed)
+
+            document.querySelector('#killed').innerText = `Player ${killed} killed by Player ${killedBy}`
 
             console.log(playerList[killed])
 
@@ -498,6 +518,8 @@ class Game{
 
             console.log('Player',sharedBy,'shared position with Player',shared)
 
+        
+           
         }
 
     }
@@ -511,11 +533,20 @@ class Game{
         for(let i=1;i<=this.numberOfPlayers;i++){
 
             if(!this.playerList[`${i}`].playerWonTheGame){
-                console.log('Player',i," Lost the game")
+                document.querySelector('#alert').innerText = `Player-${i} Lost the game`
+                document.querySelector('#messege').innerText = ``
             }
             
-
         }
+
+        document.querySelector('.middle').style.visibility = 'hidden'
+        document.querySelector('.overLap').style.display = 'flex'
+        document.querySelector('.bottom').style.display = 'none'
+
+        
+
+        SelectNumberOfPLayer = 2
+
 
     }
 
@@ -585,26 +616,47 @@ class Player{
         this.checkMoveTo = moveTo
         this.winningPositionX = winningPositionX
         this.winningPositionY = winningPositionY
+        this.sharing = false
+        this.centerPositionX = 2.5
+        this.centerPositionY = 2.4
         this.tileDim = this.canvas.height / 5;
-        this.playerPos = this.tileDim / 2.5;
-        this.playerWonTheGame = this.color==='purple'?true:false
+        this.playerPosX = this.tileDim / this.centerPositionX;
+        this.playerPosY = this.tileDim / this.centerPositionY;
+        this.playerWonTheGame = false
     }
 
 
     draw(){
         this.ctx.fillStyle = this.color
-        this.ctx.fillRect(this.currentX*this.tileDim+this.playerPos,this.currentY*this.tileDim+this.playerPos,this.tileDim/5 ,this.tileDim/5)
+        this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
     }
 
 }
 
+let SelectNumberOfPLayer = 2
+
+document.querySelector('#selectPlayer').addEventListener('click',(e)=>{
 
 
+    if (e.target.tagName === 'SPAN') {
+
+        SelectNumberOfPLayer = e.target.textContent
+    }
+
+})
 
 
-let gameInialize = new Game(canvas,ctx)
-gameInialize.start()
+function start(){
 
-function rollDice(){
-    gameInialize.rollDice()
+    document.querySelector('.overLap').style.display = 'none'
+    document.querySelector('.bottom').style.display = 'flex'
+    document.querySelector('.top').style.display = 'flex'
+    document.querySelector('.middle').style.removeProperty('visibility');
+    canvas.style.display = 'block';
+
+    gameInialize = new Game(canvas,ctx,SelectNumberOfPLayer)
+    gameInialize.start()
+
 }
+
+

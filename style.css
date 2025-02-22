@@ -4,16 +4,115 @@
     box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+
+
+body {
+    background: linear-gradient(45deg, #ffcccb, #ffb347, #ffdb58, #fff5b7);
+    background-size: 400% 400%;
+    animation: bgAnimation 3s infinite alternate;
+}
+
+/* Smooth & Faster Gradient Animation */
+@keyframes bgAnimation {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+
+
 .container{
-    height: 100vh;
+    height: 95vh;
     /* background-color:aqua; */
+    position: relative;
 }
 
 .top{
     height: 10%;
-    width: 100%;
-    background-color: gray;
+    width: auto;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: linear-gradient(45deg, #e74c3c, #ff5733);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    font-family: 'Baloo 2', sans-serif;
+    margin: 10px 10px;
+
 }
+
+/* Alert Span - For important messages like "Invalid Move" */
+#alert {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffeb3b; /* Bright Yellow for contrast */
+    -webkit-text-stroke: 1px white; /* Stronger border for visibility */
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 
+                 0px 0px 10px rgba(255, 235, 59, 0.8); /* Glow effect */
+    text-transform: uppercase;
+}
+
+
+/* Message Span - Displays game status like "Player 1 got 3" */
+#messege {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff; /* White for clarity */
+    text-transform: capitalize;
+    text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.6); /* Soft glow */
+    letter-spacing: 1px;
+    animation: fadeIn 0.5s ease-in-out, subtleGlow 2s infinite alternate;
+    margin-top: 10px;
+}
+
+/* Smooth fade-in animation */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Subtle glowing effect for a polished look */
+@keyframes subtleGlow {
+    0% { text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.6); }
+    100% { text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.9); }
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#killed {
+    font-size: 20;
+    font-weight: bold;
+    color: #ff0000; /* Blood Red */
+    -webkit-text-stroke: 1px white; /* Strong contrast */
+    text-shadow: 3px 3px 10px rgba(255, 0, 0, 0.8), 
+                 0px 0px 15px rgba(255, 69, 0, 0.9); /* Fiery glow */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulse 0.8s infinite alternate;
+    margin-top:15px
+}
+
+/* Pulsating animation to make it look more alive */
+@keyframes pulse {
+    0% { transform: scale(1); text-shadow: 3px 3px 10px rgba(255, 0, 0, 0.8); }
+    100% { transform: scale(1.1); text-shadow: 4px 4px 15px rgba(255, 69, 0, 1); }
+}
+
+
+
 .middle{
     height: 80%;
     width: 100%;
@@ -22,12 +121,138 @@
     justify-content: center;
     align-items: center;
 }
+
+
 .bottom{
     height: 10%;
-    width: 100%;
-    background-color: blue;
+    width: auto;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #16a085, #2ecc71);
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.3);
+    font-family: 'Bungee', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin: 10px 10px;
+    border-radius: 10px;
 }
 
 canvas{
     background-color: bisque;
+    display: none;
+}
+
+.overLap{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 40%;
+    background-color: gray;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #f5c518; /* Bright, golden yellow (Ludo-inspired) */
+    font-family: 'Rajdhani', sans-serif; /* Sleek, modern gaming font */
+    font-size: 20px; /* Large for clear readability */
+    color: #fff; /* White text for sharp contrast */
+    text-transform: uppercase; /* Adds a modern game feel */
+    font-weight: bold; /* Makes it stand out */
+    border-radius: 15px; /* Smooth, rounded edges like Ludo buttons */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8);
+    border:2px solid white
+}
+
+#selectPlayer span {
+    width: 50px; /* Box size */
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif; /* Modern, readable font */
+    font-size: 24px; /* Large and visible */
+    color: #fff; /* White text */
+    background-color: #2ecc71; /* Green, matches Ludo theme */
+    border-radius: 10px; /* Rounded corners */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out; /* Smooth effect */
+}
+
+/* Highlight selected player */
+#selectPlayer span.selected {
+    border: 3px solid white; /* Golden Yellow Border on selection */
+    box-shadow: 0px 0px 15px rgba(241, 196, 15, 0.8); /* Glow effect */
+    transform: scale(1.5); /* Grows slightly */
+}
+
+#dice{
+    height: 80%;
+    aspect-ratio: 1 / 1;
+}
+
+
+#selectPlayer{
+    display: flex;
+    width: 50%;
+    height: 50%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#start {
+    width: 180px;
+    height: 60px;
+    background: linear-gradient(45deg, #ff0000, #ff7300); /* Red to Orange gradient */
+    color: #fff; /* White text */
+    font-family: 'Poppins', sans-serif; /* Modern, clean font */
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 15px; /* Smooth edges */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: 3px solid white;
+    box-shadow: 0px 5px 15px rgba(255, 115, 0, 0.5); /* Glowing effect */
+}
+
+/* Hover Effect */
+#start:hover {
+    transform: scale(1.1); /* Slight growth */
+    background: linear-gradient(45deg, #ff7300, #ff0000); /* Reverse gradient */
+    box-shadow: 0px 7px 20px rgba(255, 115, 0, 0.7);
+}
+
+/* Click Effect */
+#start:active {
+    transform: scale(1); /* Subtle press effect */
+    box-shadow: 0px 3px 10px rgba(255, 115, 0, 0.5);
+}
+
+
+@media (max-width: 768px) {
+    .overLap {
+        width: 90%;  /* Make it wider on smaller screens */
+        height: 50%; /* Adjust height */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .middle{
+        height: 60%;
+
+    }
+
+    .top{
+        height: 15%;
+        margin-top: 10%;
+    }
+
+
 }
