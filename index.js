@@ -14,8 +14,10 @@ class Game{
 
         this.canvas.height = this.canvasDims
         this.canvas.width = this.canvasDims
-        this.numberOfPlayers = 2
+
+        this.numberOfPlayers = 4
         this.numberOfWinners = 0
+
         this.turn = 1
         this.playerList = {}
         this.winner = 2
@@ -40,9 +42,6 @@ class Game{
                 y:this.numberOfPlayers===4?2:null
             },
         }
-
-        
-    console.log(this.playersPosition)
 
     }
 
@@ -93,6 +92,10 @@ class Game{
     }
 
     createPlayer(){
+
+        // (canvas,ctx,startX,startY,innerX,innerY,color,moveTo,winningPositionX,winningPositionY)
+
+
         this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'green','x',2,3)
         this.playerList['1'].draw()
 
@@ -107,7 +110,7 @@ class Game{
         }
 
        if(this.numberOfPlayers===3||this.numberOfPlayers===4){
-        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'gray','-x',2,1)
+        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'yellow','-x',2,1)
         this.playerList['3'].draw()
        }  
 
@@ -124,6 +127,8 @@ class Game{
 
     rollDice(){
 
+        document.querySelector('#dice').disabled = true
+
         const randomNum = Math.floor(Math.random()*6)+1
 
         this.dice = randomNum
@@ -131,7 +136,8 @@ class Game{
         console.log('Player',this.turn,'rolled',this.dice)
 
 
-        const isEligibleToMove = this.playerPositionCheckForWinning(this.turn,this.dice)
+
+        const isEligibleToMove = this.playerPositionCheckForWinning(this.turn,this.dice,this.numberOfPlayers)
 
 
         if(isEligibleToMove.isEligible===false){
@@ -143,8 +149,13 @@ class Game{
             console.log('you need',isEligibleToMove.need,'to move')
 
             this.turn++
-            
+
             this.turn>this.numberOfPlayers?this.turn=1:null
+
+            if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+
+            this.turn>this.numberOfPlayers?this.turn=1:null
+            
 
 
         }else{
@@ -152,10 +163,15 @@ class Game{
             this.playersPosition[`${this.turn}`].x = this.playerList[`${this.turn}`].CheckCurrentX
             this.playersPosition[`${this.turn}`].y = this.playerList[`${this.turn}`].CheckCurrentY
 
-            this.updateTheGameIfPlayerIsEligibleToMove(this.turn,this.dice)
+            this.updateTheGameIfPlayerIsEligibleToMove(this.numberOfPlayers,this.turn,this.dice)
+        
 
             this.turn++
-            
+
+            this.turn>this.numberOfPlayers?this.turn=1:null
+
+            if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+
             this.turn>this.numberOfPlayers?this.turn=1:null
 
            
@@ -214,7 +230,7 @@ class Game{
 
     // check if player is eligible to move or not or if he killed some player or not
 
-    playerPositionCheckForWinning(turn,dice){
+    playerPositionCheckForWinning(turn,dice,numberOfPlayers){
 
         let tempPlayer = this.playerList[`${turn}`]
         let count = 1
@@ -249,18 +265,26 @@ class Game{
     
             }else if(tempPlayer.CheckCurrentX===0&&tempPlayer.CheckCurrentY===0||
                 tempPlayer.CheckCurrentX===3&&tempPlayer.CheckCurrentY===1||
-                turn===2&&tempPlayer.CheckCurrentX===tempPlayer.innerX&&tempPlayer.CheckCurrentY===tempPlayer.innerY||
-                turn===2&&tempPlayer.CheckCurrentX===tempPlayer.winningPositionX&&tempPlayer.CheckCurrentY===tempPlayer.winningPositionY
+                turn===3&&tempPlayer.CheckCurrentX===tempPlayer.innerX&&tempPlayer.CheckCurrentY===tempPlayer.innerY||
+                turn===3&&tempPlayer.CheckCurrentX===tempPlayer.winningPositionX&&tempPlayer.CheckCurrentY===tempPlayer.winningPositionY||
+                turn===2&&tempPlayer.CheckCurrentX===tempPlayer.innerX&&tempPlayer.CheckCurrentY===tempPlayer.innerY&&numberOfPlayers===2||
+                turn===3&&tempPlayer.CheckCurrentX===tempPlayer.winningPositionX&&tempPlayer.CheckCurrentY===tempPlayer.winningPositionY&&numberOfPlayers===2
             ){
                 tempPlayer.checkMoveTo = 'y'
     
             }else if(tempPlayer.CheckCurrentX===4&&tempPlayer.CheckCurrentY===0||
-                tempPlayer.CheckCurrentX===3&&tempPlayer.CheckCurrentY===3){
+                tempPlayer.CheckCurrentX===3&&tempPlayer.CheckCurrentY===3||
+                turn===2&&tempPlayer.CheckCurrentX===tempPlayer.innerX&&tempPlayer.CheckCurrentY===tempPlayer.innerY||
+                turn===2&&tempPlayer.CheckCurrentX===tempPlayer.winningPositionX&&tempPlayer.CheckCurrentY===tempPlayer.winningPositionY
+            ){
             
                 tempPlayer.checkMoveTo = '-x'
                 
             }else if(tempPlayer.CheckCurrentX===0&&tempPlayer.CheckCurrentY===4||
-                tempPlayer.CheckCurrentX===1&&tempPlayer.CheckCurrentY===1){
+                tempPlayer.CheckCurrentX===1&&tempPlayer.CheckCurrentY===1||
+                turn===4&&tempPlayer.CheckCurrentX===tempPlayer.innerX&&tempPlayer.CheckCurrentY===tempPlayer.innerY||
+                turn===4&&tempPlayer.CheckCurrentX===tempPlayer.winningPositionX&&tempPlayer.CheckCurrentY===tempPlayer.winningPositionY
+            ){
     
                 tempPlayer.checkMoveTo = 'x'
     
@@ -285,7 +309,11 @@ class Game{
 
     }
 
-    updateTheGameIfPlayerIsEligibleToMove(turn,dice, stepCount = 0){
+    //Updating player position based on its eligiblity
+
+    updateTheGameIfPlayerIsEligibleToMove(numberOfPlayers,turn,dice, stepCount = 0,win=false){
+
+        console.log('win at initial',win)
 
         let tempPlayer = this.playerList[`${turn}`]
 
@@ -295,23 +323,37 @@ class Game{
 
             this.updateGame();
 
+            if(win){
+
+                console.log('win at final',win)
+
+                tempPlayer.playerWonTheGame=true
+
+                this.numberOfWinners++
+
+                if(this.numberOfWinners===this.numberOfPlayers-1)this.gameOver()
+            }
+
+            document.querySelector('#dice').disabled = false
+
             return ;  // Stop when all steps are taken  
         }
+
+        
     
         setTimeout(() => {
 
             
 
-            finalTrackMovement()
+            finalTrackMovement(numberOfPlayers)
 
-            updatePostion()
+            const winUpdate = updatePostion()
 
             
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear canvas
             this.updateGame(); // Redraw game (including player)
     
-            this.updateTheGameIfPlayerIsEligibleToMove(turn, dice, stepCount + 1); // Call next step
-
+            this.updateTheGameIfPlayerIsEligibleToMove(numberOfPlayers,turn, dice, stepCount + 1,winUpdate); // Call next step
 
             
 
@@ -331,11 +373,15 @@ class Game{
 
             if(tempPlayer.currentX===2&&tempPlayer.currentY===2){
                console.log('Player',turn,'won the game')
+                win = true
+               return true
             }
+
+            return false
         }
 
 
-        function finalTrackMovement(){
+        function finalTrackMovement(numberOfPlayers){
     
             if(tempPlayer.currentX===4&&tempPlayer.currentY===4 || 
                 tempPlayer.currentX===1&&tempPlayer.currentY===3 || 
@@ -347,21 +393,30 @@ class Game{
     
             }else if(tempPlayer.currentX===0&&tempPlayer.currentY===0||
                 tempPlayer.currentX===3&&tempPlayer.currentY===1||
-                turn===2&&tempPlayer.currentX===tempPlayer.innerX&&tempPlayer.currentY===tempPlayer.innerY||
-                turn===2&&tempPlayer.currentX===tempPlayer.winningPositionX&&tempPlayer.currentY===tempPlayer.winningPositionY
-            ){
+                turn===3&&tempPlayer.currentX===tempPlayer.innerX&&tempPlayer.currentY===tempPlayer.innerY||
+                turn===3&&tempPlayer.currentX===tempPlayer.winningPositionX&&tempPlayer.currentY===tempPlayer.winningPositionY||
+                turn===2&&tempPlayer.currentX===tempPlayer.innerX&&tempPlayer.currentY===tempPlayer.innerY && numberOfPlayers===2||
+                turn===2&&tempPlayer.currentX===tempPlayer.winningPositionX&&tempPlayer.currentY===tempPlayer.winningPositionY && numberOfPlayers===2
+                ){
     
                 tempPlayer.moveTo = 'y'
                 
     
             }else if(tempPlayer.currentX===4&&tempPlayer.currentY===0||
-                tempPlayer.currentX===3&&tempPlayer.currentY===3){
+                tempPlayer.currentX===3&&tempPlayer.currentY===3||
+                turn===2&&tempPlayer.currentX===tempPlayer.innerX&&tempPlayer.currentY===tempPlayer.innerY||
+                turn===2&&tempPlayer.currentX===tempPlayer.winningPositionX&&tempPlayer.currentY===tempPlayer.winningPositionY
+            
+            ){
             
                 tempPlayer.moveTo = '-x'
                 
                 
             }else if(tempPlayer.currentX===0&&tempPlayer.currentY===4||
-                tempPlayer.currentX===1&&tempPlayer.currentY===1){
+                tempPlayer.currentX===1&&tempPlayer.currentY===1||
+                turn===4&&tempPlayer.currentX===tempPlayer.innerX&&tempPlayer.currentY===tempPlayer.innerY||
+                turn===4&&tempPlayer.currentX===tempPlayer.winningPositionX&&tempPlayer.currentY===tempPlayer.winningPositionY
+            ){
     
                 tempPlayer.moveTo = 'x'
                 
@@ -395,10 +450,15 @@ class Game{
                         i!==turn) ||
                         (tempPlayer.currentX===0&&
                         tempPlayer.currentY===2&&
-                        i!==turn)){
+                        i!==turn) ||
+                        (tempPlayer.currentX===2&&
+                        tempPlayer.currentY===2&&
+                        i!==turn)
+                    
+                    ){
                         
                         share(i,turn)
-                        console.log('Player',turn,'shared position with Player',i)
+                
                         break;  
                     }else{
                         console.log(this.playerList)
@@ -437,6 +497,23 @@ class Game{
         function share(shared,sharedBy){
 
             console.log('Player',sharedBy,'shared position with Player',shared)
+
+        }
+
+    }
+
+
+
+    gameOver(){
+
+        console.log('game Over')
+
+        for(let i=1;i<=this.numberOfPlayers;i++){
+
+            if(!this.playerList[`${i}`].playerWonTheGame){
+                console.log('Player',i," Lost the game")
+            }
+            
 
         }
 
@@ -510,7 +587,7 @@ class Player{
         this.winningPositionY = winningPositionY
         this.tileDim = this.canvas.height / 5;
         this.playerPos = this.tileDim / 2.5;
-        this.playerWonTheGame = false
+        this.playerWonTheGame = this.color==='purple'?true:false
     }
 
 
