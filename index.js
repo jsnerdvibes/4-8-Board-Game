@@ -9,16 +9,49 @@ class Game{
         this.ctx=ctx
         this.dice = undefined
         this.blocks = []
-        this.canvas.height = document.querySelector('.middle').offsetHeight
-        this.canvas.width = document.querySelector('.middle').offsetWidth
+
+        this.canvasDims = document.querySelector('.middle').offsetHeight < document.querySelector('.middle').offsetWidth ? document.querySelector('.middle').offsetHeight : document.querySelector('.middle').offsetWidth
+
+        this.canvas.height = this.canvasDims
+        this.canvas.width = this.canvasDims
         this.numberOfPlayers = 2
+        this.numberOfWinners = 0
         this.turn = 1
         this.playerList = {}
         this.winner = 2
+        this.img = new Image()
+        this.img.src = 'Final board.png'
+
+        this.playersPosition = {
+            '1':{
+                x:2,
+                y:4
+            },
+            '2':{
+                x:this.numberOfPlayers===2?2:4,
+                y:this.numberOfPlayers===2?0:2
+            },
+            '3':{
+                x:this.numberOfPlayers===(3||4)?2:null,
+                y:this.numberOfPlayers===(3||4)?0:null
+            },
+            '4':{
+                x:this.numberOfPlayers===4?0:null,
+                y:this.numberOfPlayers===4?2:null
+            },
+        }
+
+        
+    console.log(this.playersPosition)
 
     }
 
+
+    
+
     start(){
+
+       
 
         boardMap.forEach((arr,i)=>{
             arr.forEach((item,j)=>{
@@ -33,17 +66,57 @@ class Game{
             item.draw()
         })
 
-        this.createPlayer()
+        
+
+        this.img.onload = () => {
+            ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height); // Draw image to fit the canvas
+
+            this.createPlayer()
+        };
 
 
+        
+
+
+        window.addEventListener('resize',()=>{
+            this.canvasDims = document.querySelector('.middle').offsetHeight < document.querySelector('.middle').offsetWidth ? document.querySelector('.middle').offsetHeight : document.querySelector('.middle').offsetWidth
+
+            this.canvas.height = this.canvasDims
+            this.canvas.width = this.canvasDims
+
+            for(let i=1;i<=this.numberOfPlayers;i++){
+                this.playerList[`${i}`].tileDim = this.canvasDims
+            }
+
+            this.updateGame()
+        })
     }
 
     createPlayer(){
-        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'yellow','x',2,3)
+        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'green','x',2,3)
         this.playerList['1'].draw()
 
-        this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'black','-x',2,1)
+        if(this.numberOfPlayers===2){
+            
+            this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'gray','-x',2,1)
         this.playerList['2'].draw()
+
+        }else{
+            this.playerList['2'] = new Player(this.canvas,this.ctx,4,2,4,3,'black','-y',3,2)
+            this.playerList['2'].draw()
+        }
+
+       if(this.numberOfPlayers===3||this.numberOfPlayers===4){
+        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'gray','-x',2,1)
+        this.playerList['3'].draw()
+       }  
+
+       if(this.numberOfPlayers===4){
+        this.playerList['4'] = new Player(this.canvas,this.ctx,0,2,0,1,'purple','y',1,2)
+        this.playerList['4'].draw()
+       }
+
+        
     }
 
 
@@ -57,9 +130,8 @@ class Game{
 
         console.log('Player',this.turn,'rolled',this.dice)
 
-        const isEligibleToMove = this.playerPositionCheckForWinningAndKilling(this.turn,this.dice)
 
-        console.log(isEligibleToMove)
+        const isEligibleToMove = this.playerPositionCheckForWinning(this.turn,this.dice)
 
 
         if(isEligibleToMove.isEligible===false){
@@ -69,14 +141,25 @@ class Game{
             this.playerList[`${this.turn}`].checkMoveTo = this.playerList[`${this.turn}`].moveTo
 
             console.log('you need',isEligibleToMove.need,'to move')
+
             this.turn++
+            
             this.turn>this.numberOfPlayers?this.turn=1:null
 
 
         }else{
+            console.log('Player',this.turn,'position changed')
+            this.playersPosition[`${this.turn}`].x = this.playerList[`${this.turn}`].CheckCurrentX
+            this.playersPosition[`${this.turn}`].y = this.playerList[`${this.turn}`].CheckCurrentY
+
             this.updateTheGameIfPlayerIsEligibleToMove(this.turn,this.dice)
+
             this.turn++
+            
             this.turn>this.numberOfPlayers?this.turn=1:null
+
+           
+
         }
             
     }
@@ -99,6 +182,9 @@ class Game{
             
         })
 
+        ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height);
+
+
         for(let i=1;i<=this.numberOfPlayers;i++){
             this.playerList[`${i}`].draw()
         }
@@ -110,7 +196,14 @@ class Game{
     checkForWinner(){
         
         if(this.playerList[`${this.turn}`].currentX===this.winner  && this.playerList[`${this.turn}`].currentY===this.winner){
-            console.log(`Player ${this.turn} won the game`)
+            console.log(`Player ${this.turn} in the House`)
+            this.playerList[`${this.turn}`].playerWonTheGame = true
+            this.numberOfWinners++
+
+            if(this.numberOfWinners===this.numberOfPlayers-1){
+                console.log('Game Over')
+            }
+            
         }
         
 
@@ -121,7 +214,7 @@ class Game{
 
     // check if player is eligible to move or not or if he killed some player or not
 
-    playerPositionCheckForWinningAndKilling(turn,dice){
+    playerPositionCheckForWinning(turn,dice){
 
         let tempPlayer = this.playerList[`${turn}`]
         let count = 1
@@ -196,17 +289,21 @@ class Game{
 
         let tempPlayer = this.playerList[`${turn}`]
 
-        if(this.playerList[`${this.turn}`].currentX===this.winner  && this.playerList[`${this.turn}`].currentY===this.winner){
-            console.log(`Player ${this.turn} won the game`)
-        }
+        if (stepCount >= dice){
 
-        if (stepCount >= dice) return; // Stop when all steps are taken
+            this.checkToKillOrShare(turn)
+
+            this.updateGame();
+
+            return ;  // Stop when all steps are taken  
+        }
     
         setTimeout(() => {
 
             
 
             finalTrackMovement()
+
             updatePostion()
 
             
@@ -214,6 +311,10 @@ class Game{
             this.updateGame(); // Redraw game (including player)
     
             this.updateTheGameIfPlayerIsEligibleToMove(turn, dice, stepCount + 1); // Call next step
+
+
+            
+
         }, 500);
         
 
@@ -271,13 +372,79 @@ class Game{
     }
 
     
-   
+   // check player position for sharing and killing
 
-    
+    checkToKillOrShare(turn){
+
+        let tempPlayer = this.playerList[`${turn}`]
+
+        for(let i=1;i<=this.numberOfPlayers;i++){
+
+            if(this.playersPosition[`${i}`].x===tempPlayer.currentX&&
+                this.playersPosition[`${i}`].y===tempPlayer.currentY&&
+                i!==turn){
+
+                    if((tempPlayer.currentX===2&&
+                        tempPlayer.currentY===4&&
+                        i!==turn) ||
+                        (tempPlayer.currentX===4&&
+                        tempPlayer.currentY===2&&
+                        i!==turn) ||
+                        (tempPlayer.currentX===2&&
+                        tempPlayer.currentY===0&&
+                        i!==turn) ||
+                        (tempPlayer.currentX===0&&
+                        tempPlayer.currentY===2&&
+                        i!==turn)){
+                        
+                        share(i,turn)
+                        console.log('Player',turn,'shared position with Player',i)
+                        break;  
+                    }else{
+                        console.log(this.playerList)
+                        const updateKillPosition = kill(i,turn,this.playerList)
+                        this.playerList = updateKillPosition
+                        console.log(this.playerList)
+                    }
+
+            }
 
 
+        }
+
+        //Function to kill
+
+        function kill(killed,killedBy,playerList){
+
+            console.log('Player',killedBy,'killed Player',killed)
+
+            console.log(playerList[killed])
+
+            playerList[killed].currentX = playerList[killed].startX
+            playerList[killed].currentY = playerList[killed].startY
+            playerList[killed].CheckCurrentX = playerList[killed].startX
+            playerList[killed].CheckCurrentY = playerList[killed].startY
+            playerList[killed].moveTo = playerList[killed].startMoveTo
+            playerList[killed].checkMoveTo = playerList[killed].startMoveTo
+
+            return playerList
+
+        }
+
+
+        //function to share
+
+        function share(shared,sharedBy){
+
+            console.log('Player',sharedBy,'shared position with Player',shared)
+
+        }
 
     }
+
+
+
+    }//game class ends here
 
 
 
@@ -295,6 +462,7 @@ class CreateBlocks{
         this.x=x
         this.y=y
         this.pos = pos
+        this.dimension = this.canvas.height/5
     }
 
     draw(){
@@ -302,13 +470,13 @@ class CreateBlocks{
         if(this.pos===1){
 
             this.ctx.fillStyle = 'blue'
-            this.ctx.fillRect(this.x*50,this.y*50,50,50)
+            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
         }else if(this.pos===2){
             this.ctx.fillStyle = 'green'
-            this.ctx.fillRect(this.x*50,this.y*50,50,50)
+            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
         }else{
             this.ctx.fillStyle = 'red'
-            this.ctx.fillRect(this.x*50,this.y*50,50,50)
+            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
         }
 
 
@@ -328,6 +496,7 @@ class Player{
         this.ctx= ctx
         this.startX = startX
         this.startY = startY
+        this.startMoveTo = moveTo
         this.currentX = startX
         this.currentY = startY
         this.CheckCurrentX = this.currentX
@@ -339,17 +508,18 @@ class Player{
         this.checkMoveTo = moveTo
         this.winningPositionX = winningPositionX
         this.winningPositionY = winningPositionY
+        this.tileDim = this.canvas.height / 5;
+        this.playerPos = this.tileDim / 2.5;
+        this.playerWonTheGame = false
     }
 
 
     draw(){
         this.ctx.fillStyle = this.color
-        this.ctx.fillRect(this.currentX*50+15,this.currentY*50+15,20,20)
+        this.ctx.fillRect(this.currentX*this.tileDim+this.playerPos,this.currentY*this.tileDim+this.playerPos,this.tileDim/5 ,this.tileDim/5)
     }
 
 }
-
-
 
 
 
