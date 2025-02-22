@@ -140,6 +140,31 @@ body {
     border-radius: 10px;
 }
 
+button{
+    background: white;
+    border-radius:10px;
+    border:none;
+}
+
+#tapDice {
+    font-size: 20px; /* Large enough to stand out */
+    font-weight: bold;
+    font-family: 'Press Start 2P', cursive; /* Arcade-style, game-like feel */
+    color: #ffffff; /* White text for contrast */
+    text-transform: uppercase;
+    text-align: center;
+    -webkit-text-stroke: 1px black; /* Adds a slight black border for readability */
+    letter-spacing: 1px; /* Slightly spaced letters for clarity */
+    animation: pulse 1s infinite alternate ease-in-out;
+}
+
+/* Add a smooth pulsing effect */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+
 canvas{
     background-color: bisque;
     display: none;

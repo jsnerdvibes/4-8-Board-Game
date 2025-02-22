@@ -22,7 +22,7 @@ class Game{
         this.playerList = {}
         this.winner = 2
         this.img = new Image()
-        this.img.src = 'Final board.png'
+        this.img.src = 'Final board2.png'
 
         this.playersPosition = {
             '1':{
@@ -136,9 +136,11 @@ class Game{
 
         const randomNum = Math.floor(Math.random()*6)+1
 
-        this.dice = 21
+        this.dice = randomNum
 
         document.querySelector('#messege').innerText = `Player-${this.turn} got ${this.dice}`
+
+        document.querySelector('#dice').innerHTML = `${diceImage[this.dice]}`
 
 
 
@@ -169,7 +171,7 @@ class Game{
             
 
         }else{
-            console.log('Player',this.turn,'position changed')
+            
             this.playersPosition[`${this.turn}`].x = this.playerList[`${this.turn}`].CheckCurrentX
             this.playersPosition[`${this.turn}`].y = this.playerList[`${this.turn}`].CheckCurrentY
 
@@ -323,8 +325,6 @@ class Game{
 
     updateTheGameIfPlayerIsEligibleToMove(numberOfPlayers,turn,dice, stepCount = 0,win=false){
 
-        console.log('win at initial',win)
-
         let tempPlayer = this.playerList[`${turn}`]
 
         if (stepCount >= dice){
@@ -333,6 +333,8 @@ class Game{
 
 
             this.updateGame();
+
+            document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
 
             if(win){
 
