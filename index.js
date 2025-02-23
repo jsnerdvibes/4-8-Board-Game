@@ -45,9 +45,6 @@ class Game{
 
         document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
 
-        
-        console.log(this.playerList)
-
     }
 
     
@@ -511,11 +508,7 @@ class Game{
 
         function kill(killed,killedBy,playerList){
 
-            console.log('Player',killedBy,'killed Player',killed)
-
             document.querySelector('#killed').innerText = `Player ${killed} killed by Player ${killedBy}`
-
-            console.log(playerList[killed])
 
             playerList[killed].currentX = playerList[killed].startX
             playerList[killed].currentY = playerList[killed].startY
