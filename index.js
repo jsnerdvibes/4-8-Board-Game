@@ -45,6 +45,9 @@ class Game{
 
         document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
 
+        
+        console.log(this.playerList)
+
     }
 
     
@@ -81,19 +84,30 @@ class Game{
             document.querySelector('#killed').innerText = ``
         })
 
-
-        window.addEventListener('resize',()=>{
-            this.canvasDims = document.querySelector('.middle').offsetHeight < document.querySelector('.middle').offsetWidth ? document.querySelector('.middle').offsetHeight : document.querySelector('.middle').offsetWidth
-
-            this.canvas.height = this.canvasDims
-            this.canvas.width = this.canvasDims
-
-            for(let i=1;i<=this.numberOfPlayers;i++){
-                this.playerList[`${i}`].tileDim = this.canvasDims
+        window.addEventListener("beforeunload", (event) => {
+            if (!confirm("Are you sure you want to leave?")) {
+                event.preventDefault();
             }
+        });
+        
+        
 
-            this.updateGame()
-        })
+        // window.addEventListener('resize',()=>{
+        //     this.canvasDims = document.querySelector('.middle').offsetHeight < document.querySelector('.middle').offsetWidth ? document.querySelector('.middle').offsetHeight : document.querySelector('.middle').offsetWidth
+
+        //     this.canvas.height = this.canvasDims
+        //     this.canvas.width = this.canvasDims
+
+        //     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear canvas
+
+        //     for(let i=1;i<=this.numberOfPlayers;i++){
+        //         this.playerList[`${i}`].tileDim = this.canvasDims
+        //         this.playerList[`${i}`].draw()
+        //     }
+
+           
+        //     this.updateGame();
+        // })
     }
 
     createPlayer(){
@@ -136,7 +150,7 @@ class Game{
 
         const randomNum = Math.floor(Math.random()*6)+1
 
-        this.dice = randomNum
+        this.dice = this.turn===1?5:1
 
         document.querySelector('#messege').innerText = `Player-${this.turn} got ${this.dice}`
 
@@ -392,8 +406,9 @@ class Game{
             }
 
             if(tempPlayer.currentX===2&&tempPlayer.currentY===2){
-               console.log('Player',turn,'won the game')
-                win = true
+               document.querySelector('#messege').innerText = `Player ${turn} Home`
+               document.querySelector('#dice').disabled = false
+               win = true
                return true
             }
 
@@ -620,7 +635,7 @@ class Player{
         this.winningPositionY = winningPositionY
         this.sharing = false
         this.centerPositionX = 2.5
-        this.centerPositionY = 2.4
+        this.centerPositionY = 2.5
         this.tileDim = this.canvas.height / 5;
         this.playerPosX = this.tileDim / this.centerPositionX;
         this.playerPosY = this.tileDim / this.centerPositionY;
@@ -631,6 +646,8 @@ class Player{
     draw(){
         this.ctx.fillStyle = this.color
         this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
+
+        return true
     }
 
 }
