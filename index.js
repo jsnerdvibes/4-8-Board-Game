@@ -147,7 +147,7 @@ class Game{
 
         const randomNum = Math.floor(Math.random()*6)+1
 
-        this.dice = this.turn===1?5:1
+        this.dice = randomNum
 
         document.querySelector('#messege').innerText = `Player-${this.turn} got ${this.dice}`
 
