@@ -639,7 +639,7 @@ class Player{
         this.winningPositionX = winningPositionX
         this.winningPositionY = winningPositionY
         this.sharing = false
-        this.centerPositionX = 5
+        this.centerPositionX = 4.5
         this.centerPositionY = 5
         this.tileDim = this.canvas.height / 5;
         this.playerPosX = this.tileDim / this.centerPositionX;
