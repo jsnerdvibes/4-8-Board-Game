@@ -168,7 +168,6 @@ button{
 canvas{
     background-color: bisque;
     display: none;
-    width: 90%;
 }
 
 .overLap{
@@ -279,6 +278,12 @@ canvas{
     .top{
         height: 15%;
         margin-top: 10%;
+    }
+
+    canvas{
+        background-color: bisque;
+        display: none;
+        width: 90%;
     }
 
 
