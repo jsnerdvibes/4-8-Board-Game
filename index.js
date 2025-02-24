@@ -81,11 +81,11 @@ class Game{
             document.querySelector('#killed').innerText = ``
         })
 
-        window.addEventListener("beforeunload", (event) => {
-            if (!confirm("Are you sure you want to leave?")) {
-                event.preventDefault();
-            }
-        });
+        // window.addEventListener("beforeunload", (event) => {
+        //     if (!confirm("Are you sure you want to leave?")) {
+        //         event.preventDefault();
+        //     }
+        // });
         
         
 
@@ -112,26 +112,26 @@ class Game{
         // (canvas,ctx,startX,startY,innerX,innerY,color,moveTo,winningPositionX,winningPositionY)
 
 
-        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'green','x',2,3)
+        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'yellow','x',2,3)
         this.playerList['1'].draw()
 
         if(this.numberOfPlayers===2){
             
-            this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'gray','-x',2,1)
+            this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1)
         this.playerList['2'].draw()
 
         }else{
-            this.playerList['2'] = new Player(this.canvas,this.ctx,4,2,4,3,'black','-y',3,2)
+            this.playerList['2'] = new Player(this.canvas,this.ctx,4,2,4,3,'blue','-y',3,2)
             this.playerList['2'].draw()
         }
 
        if(this.numberOfPlayers===3||this.numberOfPlayers===4){
-        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'yellow','-x',2,1)
+        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1)
         this.playerList['3'].draw()
        }  
 
        if(this.numberOfPlayers===4){
-        this.playerList['4'] = new Player(this.canvas,this.ctx,0,2,0,1,'purple','y',1,2)
+        this.playerList['4'] = new Player(this.canvas,this.ctx,0,2,0,1,'green','y',1,2)
         this.playerList['4'].draw()
        }
 
@@ -168,17 +168,30 @@ class Game{
 
             document.querySelector('#messege').innerText = `Player ${this.turn} need ${isEligibleToMove.need} to move`
 
-            this.turn++
+            if(this.dice!=6){
+                this.turn++
 
-            this.turn>this.numberOfPlayers?this.turn=1:null
+                this.turn>this.numberOfPlayers?this.turn=1:null
+    
+                if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+    
+                this.turn>this.numberOfPlayers?this.turn=1:null
+    
+                document.querySelector('#dice').disabled = false
+    
+                document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
+    
+                document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+            }
 
-            if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
-
-            this.turn>this.numberOfPlayers?this.turn=1:null
-
+            
             document.querySelector('#dice').disabled = false
+    
+            document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
 
             document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+
+            
             
 
         }else{
@@ -188,14 +201,18 @@ class Game{
 
             this.updateTheGameIfPlayerIsEligibleToMove(this.numberOfPlayers,this.turn,this.dice)
         
+            if(this.dice!=6){
 
-            this.turn++
+                this.turn++
 
-            this.turn>this.numberOfPlayers?this.turn=1:null
+                this.turn>this.numberOfPlayers?this.turn=1:null
+    
+                if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+    
+                this.turn>this.numberOfPlayers?this.turn=1:null
+            }
 
-            if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
-
-            this.turn>this.numberOfPlayers?this.turn=1:null
+           
 
            
 
@@ -264,7 +281,6 @@ class Game{
 
             if(tempPlayer.CheckCurrentX===tempPlayer.winningPositionX && tempPlayer.CheckCurrentY===tempPlayer.winningPositionY){
                 if(dice-i>=1){
-                    console.log('you are not eligible to move')
                     return {isEligible:false,need:count}
                 }
             }
@@ -348,8 +364,6 @@ class Game{
             document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
 
             if(win){
-
-                console.log('win at final',win)
 
                 tempPlayer.playerWonTheGame=true
 
@@ -538,8 +552,6 @@ class Game{
 
     gameOver(){
 
-        console.log('game Over')
-
         for(let i=1;i<=this.numberOfPlayers;i++){
 
             if(!this.playerList[`${i}`].playerWonTheGame){
@@ -627,18 +639,45 @@ class Player{
         this.winningPositionX = winningPositionX
         this.winningPositionY = winningPositionY
         this.sharing = false
-        this.centerPositionX = 2.5
-        this.centerPositionY = 2.5
+        this.centerPositionX = 5
+        this.centerPositionY = 5
         this.tileDim = this.canvas.height / 5;
         this.playerPosX = this.tileDim / this.centerPositionX;
         this.playerPosY = this.tileDim / this.centerPositionY;
         this.playerWonTheGame = false
+        this.img = new Image()
+        this.img.src = `/players/${this.color}.png`
+        this.imgLoad = false
     }
 
 
     draw(){
-        this.ctx.fillStyle = this.color
-        this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
+
+        // this.ctx.fillStyle = this.color
+        // this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
+
+        this.img.onload = () => {
+            this.imgLoad=true
+
+            this.ctx.drawImage(
+                this.img, 
+                this.currentX * this.tileDim + this.playerPosX, 
+                this.currentY * this.tileDim + this.playerPosY, 
+                this.tileDim/1.8, 
+                this.tileDim/1.8
+            );
+        };
+
+
+        if(this.imgLoad){
+            this.ctx.drawImage(
+                this.img, 
+                this.currentX * this.tileDim + this.playerPosX, 
+                this.currentY * this.tileDim + this.playerPosY, 
+                this.tileDim/1.8, 
+                this.tileDim/1.8
+            );
+        };
 
         return true
     }
