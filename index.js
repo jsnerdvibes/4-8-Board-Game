@@ -99,7 +99,7 @@ class Game{
 
             document.querySelector('#dice').innerHTML = `
             
-            <img src="dice-game.gif" autoplay loop muted
+            <img src="diceAnimate/dice-game.gif" autoplay loop muted
             id="diceGif"
             ></img>
             
