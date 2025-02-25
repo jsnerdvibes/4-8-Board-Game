@@ -22,7 +22,7 @@ class Game{
         this.playerList = {}
         this.winner = 2
         this.img = new Image()
-        this.img.src = 'Final board2.png'
+        this.img.src = 'Final board3.png'
 
         this.playersPosition = {
             '1':{
@@ -73,6 +73,8 @@ class Game{
             ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height); // Draw image to fit the canvas
 
             this.createPlayer()
+
+            this.animationLoop()
         };
 
 
@@ -81,30 +83,25 @@ class Game{
             document.querySelector('#killed').innerText = ``
         })
 
-        // window.addEventListener("beforeunload", (event) => {
-        //     if (!confirm("Are you sure you want to leave?")) {
-        //         event.preventDefault();
-        //     }
-        // });
-        
-        
+        window.addEventListener("beforeunload", (event) => {
+            if (!confirm("Are you sure you want to leave?")) {
+                event.preventDefault();
+            }
+        });
 
-        // window.addEventListener('resize',()=>{
-        //     this.canvasDims = document.querySelector('.middle').offsetHeight < document.querySelector('.middle').offsetWidth ? document.querySelector('.middle').offsetHeight : document.querySelector('.middle').offsetWidth
+    }
 
-        //     this.canvas.height = this.canvasDims
-        //     this.canvas.width = this.canvasDims
+    animationLoop = ()=>{
 
-        //     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); 
+        // Clear canvas
+        this.updateGame();
 
-        //     for(let i=1;i<=this.numberOfPlayers;i++){
-        //         this.playerList[`${i}`].tileDim = this.canvasDims
-        //         this.playerList[`${i}`].draw()
-        //     }
 
-           
-        //     this.updateGame();
-        // })
+        requestAnimationFrame(this.animationLoop)
+
+
+
     }
 
     createPlayer(){
@@ -163,6 +160,9 @@ class Game{
             this.playerList[`${this.turn}`].CheckCurrentX = this.playerList[`${this.turn}`].currentX
             this.playerList[`${this.turn}`].CheckCurrentY = this.playerList[`${this.turn}`].currentY
             this.playerList[`${this.turn}`].checkMoveTo = this.playerList[`${this.turn}`].moveTo
+
+
+            document.querySelector('#dice').innerHTML = `${diceImage[this.dice]}`
 
             console.log('you need',isEligibleToMove.need,'to move')
 
@@ -596,19 +596,8 @@ class CreateBlocks{
     }
 
     draw(){
-        
-        if(this.pos===1){
-
-            this.ctx.fillStyle = 'blue'
-            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
-        }else if(this.pos===2){
-            this.ctx.fillStyle = 'green'
-            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
-        }else{
-            this.ctx.fillStyle = 'red'
-            this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
-        }
-
+        this.ctx.fillStyle = 'white'
+        this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
 
     }
 
@@ -639,43 +628,75 @@ class Player{
         this.winningPositionX = winningPositionX
         this.winningPositionY = winningPositionY
         this.sharing = false
-        this.centerPositionX = 4.5
-        this.centerPositionY = 5
+        this.centerPositionX = 6.5
+        this.centerPositionY = 6
         this.tileDim = this.canvas.height / 5;
         this.playerPosX = this.tileDim / this.centerPositionX;
         this.playerPosY = this.tileDim / this.centerPositionY;
         this.playerWonTheGame = false
+        this.base = new Image()
+        this.base.src = `/players/baseImage.png`
         this.img = new Image()
         this.img.src = `/players/${this.color}.png`
         this.imgLoad = false
+        this.baseImgLoad = false
+       
     }
+
+    
 
 
     draw(){
 
+        
+
         // this.ctx.fillStyle = this.color
         // this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
 
+        this.base.onload = () => {
+            this.baseImgLoad = true
+
+            this.ctx.drawImage(
+                this.base, 
+                this.currentX * this.tileDim + this.playerPosX, 
+                this.currentY * this.tileDim + this.playerPosY, 
+                this.tileDim/1.4, 
+                this.tileDim/1.4
+            );
+        };
+
+
         this.img.onload = () => {
+
             this.imgLoad=true
 
             this.ctx.drawImage(
                 this.img, 
                 this.currentX * this.tileDim + this.playerPosX, 
                 this.currentY * this.tileDim + this.playerPosY, 
-                this.tileDim/1.8, 
-                this.tileDim/1.8
+                this.tileDim/1.4, 
+                this.tileDim/1.4
             );
         };
 
+
+        if(this.baseImgLoad){
+            this.ctx.drawImage(
+                this.base, 
+                this.currentX * this.tileDim + this.playerPosX, 
+                this.currentY * this.tileDim + this.playerPosY, 
+                this.tileDim/1.4, 
+                this.tileDim/1.4
+            );
+        };
 
         if(this.imgLoad){
             this.ctx.drawImage(
                 this.img, 
                 this.currentX * this.tileDim + this.playerPosX, 
                 this.currentY * this.tileDim + this.playerPosY, 
-                this.tileDim/1.8, 
-                this.tileDim/1.8
+                this.tileDim/1.4, 
+                this.tileDim/1.4
             );
         };
 

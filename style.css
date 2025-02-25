@@ -170,6 +170,12 @@ canvas{
     display: none;
 }
 
+.images{
+    background-color: white !important;
+    border: 4px solid blue;
+    height: 100vh;
+}
+
 .overLap{
     position: absolute;
     top: 50%;
