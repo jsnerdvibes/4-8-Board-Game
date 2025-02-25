@@ -138,6 +138,7 @@ body {
     text-transform: uppercase;
     margin: 10px 10px;
     border-radius: 10px;
+    position: relative;
 }
 
 button{
@@ -145,6 +146,8 @@ button{
     border-radius:10px;
     border:none;
 }
+
+
 
 #tapDice {
     font-size: 20px; /* Large enough to stand out */
@@ -226,6 +229,16 @@ canvas{
     height: 80%;
     aspect-ratio: 1 / 1;
 }
+
+
+#diceGif {
+    width: 100%;
+    height: 100%;
+    transform: scale(1.5); /* Correct way to scale */
+}
+
+ 
+
 
 
 #selectPlayer{

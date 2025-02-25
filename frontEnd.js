@@ -51,5 +51,7 @@ const diceImage = {
             <circle cx="70" cy="30" r="10" fill="black"/>
             <circle cx="70" cy="50" r="10" fill="black"/>
             <circle cx="70" cy="70" r="10" fill="black"/>
-          </svg>`
+          </svg>`,
 };
+
+

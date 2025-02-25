@@ -24,6 +24,9 @@ class Game{
         this.img = new Image()
         this.img.src = 'Final board3.png'
 
+        this.blurPosition = this.turn
+
+
         this.playersPosition = {
             '1':{
                 x:2,
@@ -72,6 +75,7 @@ class Game{
         this.img.onload = () => {
             ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height); // Draw image to fit the canvas
 
+
             this.createPlayer()
 
             this.animationLoop()
@@ -79,15 +83,36 @@ class Game{
 
 
         document.querySelector('#dice').addEventListener('click',()=>{
-            this.rollDice()
+            
+
+            document.querySelector('#dice').innerHTML = `
+            
+            <img src="dice-game.gif" autoplay loop muted
+            id="diceGif"
+            ></img>
+            
+            `
+
+            setTimeout(()=>{
+                this.rollDice()
+            },400)
+
+            document.querySelector('#dice').innerHTML = `
+            
+            <img src="dice-game.gif" autoplay loop muted
+            id="diceGif"
+            ></img>
+            
+            `
+
             document.querySelector('#killed').innerText = ``
         })
 
-        window.addEventListener("beforeunload", (event) => {
-            if (!confirm("Are you sure you want to leave?")) {
-                event.preventDefault();
-            }
-        });
+        // window.addEventListener("beforeunload", (event) => {
+        //     if (!confirm("Are you sure you want to leave?")) {
+        //         event.preventDefault();
+        //     }
+        // });
 
     }
 
@@ -104,31 +129,52 @@ class Game{
 
     }
 
+    createBlurEffect(){
+       
+        const player = this.playerList[`${this.blurPosition}`];
+
+        this.ctx.filter = "blur(10px)";
+        this.ctx.fillStyle = "#00FFFF"; // Bright Cyan (Highly Visible)  
+
+        this.ctx.beginPath();
+        this.ctx.arc(
+            player.currentX * player.tileDim + player.playerPosX+player.tileDim / 2.8, 
+            player.currentY * player.tileDim + player.playerPosY+player.tileDim / 2.8, 
+            30, 
+            0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.filter = "none";
+
+
+
+
+    }
+
     createPlayer(){
 
         // (canvas,ctx,startX,startY,innerX,innerY,color,moveTo,winningPositionX,winningPositionY)
 
 
-        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'yellow','x',2,3)
+        this.playerList['1'] = new Player(this.canvas,this.ctx,2,4,1,4,'yellow','x',2,3,3.8)
         this.playerList['1'].draw()
 
         if(this.numberOfPlayers===2){
             
-            this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1)
+            this.playerList['2'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1,4.8)
         this.playerList['2'].draw()
 
         }else{
-            this.playerList['2'] = new Player(this.canvas,this.ctx,4,2,4,3,'blue','-y',3,2)
+            this.playerList['2'] = new Player(this.canvas,this.ctx,4,2,4,3,'blue','-y',3,2,4.8)
             this.playerList['2'].draw()
         }
 
        if(this.numberOfPlayers===3||this.numberOfPlayers===4){
-        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1)
+        this.playerList['3'] = new Player(this.canvas,this.ctx,2,0,3,0,'red','-x',2,1,5.8)
         this.playerList['3'].draw()
        }  
 
        if(this.numberOfPlayers===4){
-        this.playerList['4'] = new Player(this.canvas,this.ctx,0,2,0,1,'green','y',1,2)
+        this.playerList['4'] = new Player(this.canvas,this.ctx,0,2,0,1,'green','y',1,2,6.8)
         this.playerList['4'].draw()
        }
 
@@ -146,6 +192,7 @@ class Game{
 
         this.dice = randomNum
 
+
         document.querySelector('#messege').innerText = `Player-${this.turn} got ${this.dice}`
 
         document.querySelector('#dice').innerHTML = `${diceImage[this.dice]}`
@@ -154,69 +201,76 @@ class Game{
 
         const isEligibleToMove = this.playerPositionCheckForWinning(this.turn,this.dice,this.numberOfPlayers)
 
-
-        if(isEligibleToMove.isEligible===false){
-
-            this.playerList[`${this.turn}`].CheckCurrentX = this.playerList[`${this.turn}`].currentX
-            this.playerList[`${this.turn}`].CheckCurrentY = this.playerList[`${this.turn}`].currentY
-            this.playerList[`${this.turn}`].checkMoveTo = this.playerList[`${this.turn}`].moveTo
-
-
-            document.querySelector('#dice').innerHTML = `${diceImage[this.dice]}`
-
-            console.log('you need',isEligibleToMove.need,'to move')
-
-            document.querySelector('#messege').innerText = `Player ${this.turn} need ${isEligibleToMove.need} to move`
-
-            if(this.dice!=6){
-                this.turn++
-
-                this.turn>this.numberOfPlayers?this.turn=1:null
+        setTimeout(()=>{
+            
+            if(isEligibleToMove.isEligible===false){
     
-                if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+                this.playerList[`${this.turn}`].CheckCurrentX = this.playerList[`${this.turn}`].currentX
+                this.playerList[`${this.turn}`].CheckCurrentY = this.playerList[`${this.turn}`].currentY
+                this.playerList[`${this.turn}`].checkMoveTo = this.playerList[`${this.turn}`].moveTo
     
-                this.turn>this.numberOfPlayers?this.turn=1:null
     
+                document.querySelector('#dice').innerHTML = `${diceImage[this.dice]}`
+    
+                console.log('you need',isEligibleToMove.need,'to move')
+    
+                document.querySelector('#messege').innerText = `Player ${this.turn} need ${isEligibleToMove.need} to move`
+    
+                if(this.dice!=6){
+                    this.turn++
+    
+                    this.turn>this.numberOfPlayers?this.turn=1:null
+        
+                    if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+        
+                    this.turn>this.numberOfPlayers?this.turn=1:null
+        
+                    document.querySelector('#dice').disabled = false
+        
+                    document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
+        
+                    document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
+                }
+    
+                
                 document.querySelector('#dice').disabled = false
-    
+        
                 document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
     
                 document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
-            }
-
-            
-            document.querySelector('#dice').disabled = false
     
-            document.querySelector('#dice').innerHTML = `<span id="tapDice">Tap</span>`
-
-            document.querySelector('#alert').innerText = `Turn : Player-${this.turn}`
-
+                this.blurPosition = this.turn
+    
+                
+                
+    
+            }else{
+                
+                this.playersPosition[`${this.turn}`].x = this.playerList[`${this.turn}`].CheckCurrentX
+                this.playersPosition[`${this.turn}`].y = this.playerList[`${this.turn}`].CheckCurrentY
+    
+                this.updateTheGameIfPlayerIsEligibleToMove(this.numberOfPlayers,this.turn,this.dice)
             
-            
-
-        }else{
-            
-            this.playersPosition[`${this.turn}`].x = this.playerList[`${this.turn}`].CheckCurrentX
-            this.playersPosition[`${this.turn}`].y = this.playerList[`${this.turn}`].CheckCurrentY
-
-            this.updateTheGameIfPlayerIsEligibleToMove(this.numberOfPlayers,this.turn,this.dice)
+                if(this.dice!=6){
+    
+                    this.turn++
+    
+                    this.turn>this.numberOfPlayers?this.turn=1:null
         
-            if(this.dice!=6){
-
-                this.turn++
-
-                this.turn>this.numberOfPlayers?this.turn=1:null
+                    if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+        
+                    this.turn>this.numberOfPlayers?this.turn=1:null
+                }
     
-                if(this.playerList[`${this.turn}`].playerWonTheGame)this.turn++
+               
     
-                this.turn>this.numberOfPlayers?this.turn=1:null
+               
+    
             }
 
-           
+        },400)
 
-           
 
-        }
             
     }
 
@@ -241,9 +295,14 @@ class Game{
         ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height);
 
 
+        this.createBlurEffect()
+
+
         for(let i=1;i<=this.numberOfPlayers;i++){
             this.playerList[`${i}`].draw()
         }
+
+        
 
     }
 
@@ -379,6 +438,7 @@ class Game{
                 document.querySelector('#messege').innerText = ``
             }
 
+            this.blurPosition = this.turn
             
 
             return ;  // Stop when all steps are taken  
@@ -610,7 +670,7 @@ class CreateBlocks{
 
 class Player{
 
-    constructor(canvas,ctx,startX,startY,innerX,innerY,color,moveTo,winningPositionX,winningPositionY){
+    constructor(canvas,ctx,startX,startY,innerX,innerY,color,moveTo,winningPositionX,winningPositionY,posY){
         this.canvas = canvas
         this.ctx= ctx
         this.startX = startX
@@ -629,18 +689,15 @@ class Player{
         this.winningPositionY = winningPositionY
         this.sharing = false
         this.centerPositionX = 6.5
-        this.centerPositionY = 6
+        this.centerPositionY = posY
         this.tileDim = this.canvas.height / 5;
         this.playerPosX = this.tileDim / this.centerPositionX;
         this.playerPosY = this.tileDim / this.centerPositionY;
         this.playerWonTheGame = false
-        this.base = new Image()
-        this.base.src = `/players/baseImage.png`
         this.img = new Image()
         this.img.src = `/players/${this.color}.png`
         this.imgLoad = false
-        this.baseImgLoad = false
-       
+        
     }
 
     
@@ -653,18 +710,7 @@ class Player{
         // this.ctx.fillStyle = this.color
         // this.ctx.fillRect(this.currentX*this.tileDim+this.playerPosX,this.currentY*this.tileDim+this.playerPosY,this.tileDim/5 ,this.tileDim/5)
 
-        this.base.onload = () => {
-            this.baseImgLoad = true
-
-            this.ctx.drawImage(
-                this.base, 
-                this.currentX * this.tileDim + this.playerPosX, 
-                this.currentY * this.tileDim + this.playerPosY, 
-                this.tileDim/1.4, 
-                this.tileDim/1.4
-            );
-        };
-
+        
 
         this.img.onload = () => {
 
@@ -672,17 +718,6 @@ class Player{
 
             this.ctx.drawImage(
                 this.img, 
-                this.currentX * this.tileDim + this.playerPosX, 
-                this.currentY * this.tileDim + this.playerPosY, 
-                this.tileDim/1.4, 
-                this.tileDim/1.4
-            );
-        };
-
-
-        if(this.baseImgLoad){
-            this.ctx.drawImage(
-                this.base, 
                 this.currentX * this.tileDim + this.playerPosX, 
                 this.currentY * this.tileDim + this.playerPosY, 
                 this.tileDim/1.4, 
