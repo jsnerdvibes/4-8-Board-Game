@@ -300,7 +300,7 @@ canvas{
     }
 
     canvas{
-        background-color: bisque;
+        background-color: transparent;
         display: none;
         width: 90%;
     }

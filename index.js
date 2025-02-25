@@ -22,7 +22,7 @@ class Game{
         this.playerList = {}
         this.winner = 2
         this.img = new Image()
-        this.img.src = 'Final board3.png'
+        this.img.src = 'boards/Final_board4-rmBgpng.png'
 
         this.blurPosition = this.turn
 
@@ -87,7 +87,7 @@ class Game{
 
             document.querySelector('#dice').innerHTML = `
             
-            <img src="dice-game.gif" autoplay loop muted
+            <img src="diceAnimate/dice-game.gif" autoplay loop muted
             id="diceGif"
             ></img>
             
@@ -134,7 +134,7 @@ class Game{
         const player = this.playerList[`${this.blurPosition}`];
 
         this.ctx.filter = "blur(10px)";
-        this.ctx.fillStyle = "#00FFFF"; // Bright Cyan (Highly Visible)  
+        this.ctx.fillStyle = "rgb(147, 250, 255)"; // Bright Cyan (Highly Visible)  
 
         this.ctx.beginPath();
         this.ctx.arc(
@@ -656,7 +656,7 @@ class CreateBlocks{
     }
 
     draw(){
-        this.ctx.fillStyle = 'white'
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.0)';
         this.ctx.fillRect(this.x*this.dimension,this.y*this.dimension,this.dimension,this.dimension)
 
     }
