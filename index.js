@@ -99,11 +99,13 @@ class Game{
 
             document.querySelector('#dice').innerHTML = `
             
-            <img src="diceAnimate/dice-game.gif" autoplay loop muted
+            <img src="diceAnimate/dice-game1.gif" autoplay loop muted
             id="diceGif"
             ></img>
             
             `
+
+            document.querySelector("diceGif").playbackRate = 1000;
 
             document.querySelector('#killed').innerText = ``
         })
